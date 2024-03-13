@@ -1,6 +1,10 @@
 import { Controller, Get, UseGuards } from '@nestjs/common'
-import { AuthService } from './auth.service'
 import { AuthGuard } from '@nestjs/passport'
+
+import { GetUser } from './decorators'
+import { AuthService } from './auth.service'
+// import { CreateUserDto } from './dtos'
+import { User } from './entities/user.entity'
 
 @Controller('auth')
 export class AuthController {
@@ -8,7 +12,16 @@ export class AuthController {
 
   @Get()
   @UseGuards(AuthGuard('discord'))
-  async discordLogin () {
-    return { msg: 'hello' }
+  async loginDiscord (
+  @GetUser() user: User
+  ) {
+    return await this.authService.loginDiscord(user)
   }
+
+  // @Post()
+  // async createUser (
+  // @GetUser() createUserDto: CreateUserDto
+  // ) {
+  //   return await this.authService.create(createUserDto)
+  // }
 }

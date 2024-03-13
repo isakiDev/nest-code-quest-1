@@ -6,3 +6,6 @@
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
 # Steps
+- copy .env.example and rename to .env
+- fill environment in .env
+- docker-compose up -d
