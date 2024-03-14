@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 
 import { DiscordStrategy } from './auth/strategies'
 import { AuthModule } from './auth/auth.module'
+import { DrawsModule } from './draws/draws.module'
+import { AwardsModule } from './awards/awards.module';
 
 @Module({
   imports: [
@@ -24,7 +26,9 @@ import { AuthModule } from './auth/auth.module'
     }),
 
     PassportModule.register({ defaultStrategy: 'discord' }),
-    AuthModule
+    AuthModule,
+    DrawsModule,
+    AwardsModule
   ],
   providers: [DiscordStrategy]
 })
