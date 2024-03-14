@@ -1,3 +1,4 @@
+import { IsBoolean } from 'class-validator'
 import { Column, Entity, PrimaryColumn } from 'typeorm'
 
 @Entity('users')
@@ -21,6 +22,12 @@ export class User {
     default: true
   })
   readonly joinedToServer?: boolean
+
+  @Column('bool', {
+    default: true
+  })
+  @IsBoolean()
+    isActive?: boolean
 
   @Column('timestamp', {
     default: () => 'CURRENT_TIMESTAMP'

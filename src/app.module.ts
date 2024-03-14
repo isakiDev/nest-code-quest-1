@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common'
-import { PassportModule } from '@nestjs/passport'
 import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
-import { DiscordStrategy } from './auth/strategies'
 import { AuthModule } from './auth/auth.module'
+
 import { DrawsModule } from './draws/draws.module'
-import { AwardsModule } from './awards/awards.module';
+import { AwardsModule } from './awards/awards.module'
 
 @Module({
   imports: [
@@ -25,11 +24,9 @@ import { AwardsModule } from './awards/awards.module';
       synchronize: true
     }),
 
-    PassportModule.register({ defaultStrategy: 'discord' }),
     AuthModule,
     DrawsModule,
     AwardsModule
-  ],
-  providers: [DiscordStrategy]
+  ]
 })
 export class AppModule {}
