@@ -1,5 +1,6 @@
-import { BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { BeforeInsert, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { AwardImage } from './'
+import { User } from 'src/auth/entities/user.entity'
 
 @Entity('awards')
 export class Award {
@@ -18,6 +19,12 @@ export class Award {
     default: () => 'CURRENT_TIMESTAMP'
   })
   readonly updatedAt?: Date
+
+  @ManyToOne(
+    () => User,
+    (user) => user.id
+  )
+    user: User
 
   @OneToMany(
     () => AwardImage,

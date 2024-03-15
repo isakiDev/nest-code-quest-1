@@ -1,5 +1,5 @@
 import { UnauthorizedException } from '@nestjs/common'
-import { type ConfigService } from '@nestjs/config'
+import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
 import { InjectRepository } from '@nestjs/typeorm'
 
@@ -13,12 +13,11 @@ import { type JwtPayload } from '../interfaces'
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor (
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
-    // configService: ConfigService
+    private readonly userRepository: Repository<User>,
+    configService: ConfigService
   ) {
     super({
-      // TODO: add config service
-      secretOrKey: process.env.JWT_SECRET,
+      secretOrKey: configService.get('JWT_SECRET'),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
     })
   }

@@ -6,6 +6,7 @@ import { DataSource, Repository } from 'typeorm'
 import { type PaginationDto } from '../common'
 import { Award, AwardImage } from './entities'
 import type { UpdateAwardDto, CreateAwardDto } from './dtos'
+import { type User } from '../auth/entities/user.entity'
 
 @Injectable()
 export class AwardsService {
@@ -19,13 +20,14 @@ export class AwardsService {
 
   ) {}
 
-  async create (createAwardDto: CreateAwardDto /* user */) {
+  async create (createAwardDto: CreateAwardDto, user: User) {
     const { name, images = [] } = createAwardDto
 
     try {
       const award = this.awardRepository.create({
         name,
-        images: images.map(image => this.awardImageRepository.create({ url: image }))
+        images: images.map(image => this.awardImageRepository.create({ url: image })),
+        user
       })
 
       await this.awardRepository.save(award)
@@ -58,10 +60,12 @@ export class AwardsService {
     return award
   }
 
-  async update (id: string, updateAwardDto: UpdateAwardDto /* user */) {
+  async update (id: string, updateAwardDto: UpdateAwardDto, user: User) {
     const { images, name } = updateAwardDto
 
     const award = await this.awardRepository.preload({ id, name })
+
+    if (!award) throw new NotFoundException(`Award with id ${id} not found`)
 
     const queryRunner = this.datasource.createQueryRunner()
     await queryRunner.connect()
@@ -73,8 +77,7 @@ export class AwardsService {
         award.images = images.map(image => this.awardImageRepository.create({ url: image }))
       }
 
-      // TODO: add user
-      // award.user = user
+      award.user = user
 
       await queryRunner.manager.save(award)
       await queryRunner.commitTransaction()

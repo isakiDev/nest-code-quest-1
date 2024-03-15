@@ -2,15 +2,17 @@ import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
-import { AuthModule } from './auth/auth.module'
+import { EnvConfiguration, JoiValidationSchema } from './config'
 
+import { AuthModule } from './auth/auth.module'
 import { DrawsModule } from './draws/draws.module'
 import { AwardsModule } from './awards/awards.module'
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true
+      load: [EnvConfiguration],
+      validationSchema: JoiValidationSchema
     }),
 
     TypeOrmModule.forRoot({
