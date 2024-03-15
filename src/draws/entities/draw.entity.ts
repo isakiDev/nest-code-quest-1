@@ -1,13 +1,12 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { User } from 'src/auth/entities/user.entity'
+import { BeforeInsert, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity('draws')
 export class Draw {
   @PrimaryGeneratedColumn('uuid')
   readonly id: string
 
-  @Column('text', {
-    unique: true
-  })
+  @Column('text')
     name: string
 
   @Column('timestamp')
@@ -15,8 +14,6 @@ export class Draw {
 
   @Column('timestamp')
   readonly finalDate: Date
-
-  // userId (default null)
 
   @Column('timestamp', {
     default: () => 'CURRENT_TIMESTAMP'
@@ -27,6 +24,16 @@ export class Draw {
     default: () => 'CURRENT_TIMESTAMP'
   })
   readonly updatedAt?: Date
+
+  // ? null because the winner is obtained when he wins
+  @ManyToOne(() => User, { nullable: true })
+    winningUser?: User
+
+  @ManyToOne(
+    () => User,
+    (user) => user.id
+  )
+  readonly user: User
 
   @BeforeInsert()
   checkFieldsInsert () {

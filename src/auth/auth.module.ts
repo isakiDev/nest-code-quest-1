@@ -31,6 +31,9 @@ import { DiscordStrategy, JwtStrategy } from './strategies'
         }
       }
     })
+  ],
+  exports: [
+    AuthService
   ]
 })
 export class AuthModule {}

@@ -1,31 +1,43 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, ParseUUIDPipe } from '@nestjs/common'
+
+import { PaginationDto } from '../common'
 import { DrawsService } from './draws.service'
-import { CreateDrawDto } from './dtos/create-draw.dto'
-// import { UpdateDrawDto } from './dto/update-draw.dto'
+import { Auth, GetUser } from '../auth/decorators'
+import { User } from '../auth/entities/user.entity'
+import { CreateDrawDto, UpdateDrawDto } from './dtos'
+import { ValidRoles } from '../auth/interfaces'
 
 @Controller('draws')
 export class DrawsController {
   constructor (private readonly drawsService: DrawsService) {}
 
   @Post()
-  async create (@Body() createDrawDto: CreateDrawDto) {
-    await this.drawsService.create(createDrawDto)
+  @Auth(ValidRoles.admin)
+  async create (
+  @GetUser() user: User,
+    @Body() createDrawDto: CreateDrawDto
+  ) {
+    return await this.drawsService.create(createDrawDto, user)
   }
 
-  // @Get()
-  // findAll () {
-  //   return this.drawsService.findAll()
-  // }
+  @Get()
+  async findAll (@Body() paginationDro: PaginationDto) {
+    return await this.drawsService.findAll(paginationDro)
+  }
 
-  // @Get(':id')
-  // findOne (@Param('id') id: string) {
-  //   return this.drawsService.findOne(+id)
-  // }
+  @Patch(':id')
+  @Auth(ValidRoles.admin)
+  async update (
+  @GetUser() user: User,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateDrawDto: UpdateDrawDto) {
+    return await this.drawsService.update(id, updateDrawDto, user)
+  }
 
-  // @Patch(':id')
-  // update (@Param('id') id: string, @Body() updateDrawDto: UpdateDrawDto) {
-  //   return this.drawsService.update(+id, updateDrawDto)
-  // }
+  @Get(':id')
+  async findOne (@Param('id', ParseUUIDPipe) id: string) {
+    return await this.drawsService.findOne(id)
+  }
 
   // @Delete(':id')
   // remove (@Param('id') id: string) {
