@@ -10,6 +10,7 @@ import { AwardsController } from './awards.controller'
   providers: [AwardsService],
   imports: [
     TypeOrmModule.forFeature([Award, AwardImage])
-  ]
+  ],
+  exports: [AwardsService]
 })
 export class AwardsModule {}

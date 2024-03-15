@@ -17,7 +17,7 @@ export class AuthService {
   ) {}
 
   async loginDiscord (user: User) {
-    const userFound = await this.findOneBy(user.id)
+    const userFound = await this.findOne(user.id)
 
     if (!userFound) {
       const newUser = await this.create(user)
@@ -43,7 +43,7 @@ export class AuthService {
     return userSaved
   }
 
-  async findOneBy (id: string) {
+  async findOne (id: string) {
     const user = await this.userRepository.findOneBy({ id })
     return user
   }

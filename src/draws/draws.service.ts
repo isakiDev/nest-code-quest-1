@@ -4,16 +4,21 @@ import { Repository } from 'typeorm'
 
 import { type User } from '../auth/entities/user.entity'
 import { Draw } from './entities/draw.entity'
-import type { CreateDrawDto, UpdateDrawDto } from './dtos'
+import type { CreateDrawAwardDto, CreateDrawDto, UpdateDrawDto } from './dtos'
 import { AuthService } from 'src/auth/auth.service'
 import { type PaginationDto } from 'src/common'
+import { AwardsService } from 'src/awards/awards.service'
+import { DrawAward } from './entities'
 
 @Injectable()
 export class DrawsService {
   constructor (
     @InjectRepository(Draw)
     private readonly drawRepository: Repository<Draw>,
-    private readonly authService: AuthService
+    @InjectRepository(DrawAward)
+    private readonly drawAwardRepository: Repository<DrawAward>,
+    private readonly authService: AuthService,
+    private readonly awardService: AwardsService
   ) {}
 
   async create (createDrawDto: CreateDrawDto, user: User) {
@@ -43,7 +48,7 @@ export class DrawsService {
     })
 
     if (winningUserId) {
-      const user = await this.authService.findOneBy(winningUserId)
+      const user = await this.authService.findOne(winningUserId)
       if (!user) throw new NotFoundException(`User with id ${id} not found`)
       draw.winningUser = user
     }
@@ -74,6 +79,16 @@ export class DrawsService {
     if (!draw) throw new NotFoundException(`Draw with id ${id} not found`)
 
     return draw
+  }
+
+  async createDrawAward (createDrawAwardDto: CreateDrawAwardDto) {
+    const { drawId, awardId } = createDrawAwardDto
+
+    const award = await this.awardService.findOne(awardId)
+    const draw = await this.findOne(drawId)
+
+    const drawAward = this.drawAwardRepository.create({ award, draw })
+    return await this.drawAwardRepository.save(drawAward)
   }
 
   // TODO: add remove

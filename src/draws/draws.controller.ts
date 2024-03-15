@@ -4,7 +4,7 @@ import { PaginationDto } from '../common'
 import { DrawsService } from './draws.service'
 import { Auth, GetUser } from '../auth/decorators'
 import { User } from '../auth/entities/user.entity'
-import { CreateDrawDto, UpdateDrawDto } from './dtos'
+import { CreateDrawAwardDto, CreateDrawDto, UpdateDrawDto } from './dtos'
 import { ValidRoles } from '../auth/interfaces'
 
 @Controller('draws')
@@ -37,6 +37,11 @@ export class DrawsController {
   @Get(':id')
   async findOne (@Param('id', ParseUUIDPipe) id: string) {
     return await this.drawsService.findOne(id)
+  }
+
+  @Post('create-draw-award')
+  async createDrawAward (@Body() createDrawAwardDto: CreateDrawAwardDto) {
+    return await this.drawsService.createDrawAward(createDrawAwardDto)
   }
 
   // @Delete(':id')
