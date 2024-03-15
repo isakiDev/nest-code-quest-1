@@ -40,9 +40,12 @@ export class DrawsController {
   }
 
   @Post('create-draw-award')
+  @Auth(ValidRoles.admin)
   async createDrawAward (@Body() createDrawAwardDto: CreateDrawAwardDto) {
     return await this.drawsService.createDrawAward(createDrawAwardDto)
   }
+
+  // TODO: think add updateDrawAward
 
   // @Delete(':id')
   // remove (@Param('id') id: string) {

@@ -7,6 +7,7 @@ import { EnvConfiguration, JoiValidationSchema } from './config'
 import { AuthModule } from './auth/auth.module'
 import { DrawsModule } from './draws/draws.module'
 import { AwardsModule } from './awards/awards.module'
+import { ParticipantsModule } from './participants/participants.module';
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { AwardsModule } from './awards/awards.module'
 
     AuthModule,
     DrawsModule,
-    AwardsModule
+    AwardsModule,
+    ParticipantsModule
   ]
 })
 export class AppModule {}
