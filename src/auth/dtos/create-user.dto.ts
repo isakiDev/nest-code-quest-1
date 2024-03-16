@@ -1,12 +1,15 @@
-import { IsString } from 'class-validator'
+import { IsEmail, IsString } from 'class-validator'
 
 export class CreateUserDto {
   @IsString()
-    id: string
+  readonly oAuthId: string
+
+  @IsEmail()
+  readonly email: string
 
   @IsString()
-    username: string
+  readonly username: string
 
   @IsString()
-    avatar: string
+  readonly avatar: string
 }

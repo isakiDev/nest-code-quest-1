@@ -23,10 +23,8 @@ export class DiscordStrategy extends PassportStrategy(Strategy) {
 
     if (!joinedToServer) throw new UnauthorizedException('User not joined to server')
 
-    const { id, username, avatar } = profile
+    const { id, username, avatar, email } = profile
 
-    const user = { id, username, avatar }
-
-    return user
+    return { oAuthId: id, username, avatar, email }
   }
 }

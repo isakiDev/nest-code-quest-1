@@ -1,13 +1,20 @@
 import { IsBoolean } from 'class-validator'
-import { Column, Entity, PrimaryColumn } from 'typeorm'
+import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm'
 
 @Entity('users')
+@Unique(['email'])
 export class User {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn('uuid')
   readonly id: string
 
   @Column('text')
+  readonly oAuthId: string
+
+  @Column('text')
   readonly username: string
+
+  @Column('text')
+  readonly email: string
 
   @Column('text')
   readonly avatar: string

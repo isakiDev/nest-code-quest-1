@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 
 import { Repository } from 'typeorm'
@@ -16,22 +16,9 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) {}
 
-  // TODO: think separate logic
-  async loginDiscord (user: User) {
-    const userFound = await this.findOne(user.id)
-      .catch(error => { })
-
-    if (!userFound) {
-      const newUser = await this.create(user)
-
-      return {
-        ...newUser,
-        token: this.getJwt({ id: newUser.id })
-      }
-    }
-
-    await this.userRepository.update(userFound.id, user)
-
+  async login (user: User) {
+    await this.findOne(user.email)
+    // await this.userRepository.update(userFound.id, user)
     return {
       ...user,
       token: this.getJwt({ id: user.id })
@@ -39,20 +26,37 @@ export class AuthService {
   }
 
   async create (createUserDto: CreateUserDto) {
-    const user = this.userRepository.create(createUserDto)
-    const userSaved = await this.userRepository.save(user)
+    try {
+      const user = this.userRepository.create(createUserDto)
 
-    return userSaved
+      console.log(user)
+
+      await this.userRepository.save(user)
+
+      return {
+        ...user,
+        token: this.getJwt({ id: user.id })
+      }
+    } catch (error) {
+      console.log(error)
+      this.handleErrorException(error)
+    }
   }
 
-  async findOne (id: string) {
-    const user = await this.userRepository.findOneBy({ id })
-    if (!user) throw new NotFoundException(`User with id ${id} not found`)
+  async findOne (email: string) {
+    const user = await this.userRepository.findOneBy({ email })
+    if (!user) throw new NotFoundException(`User with email ${email} not found`)
     return user
   }
 
   private getJwt (payload: JwtPayload) {
     const token = this.jwtService.sign(payload)
     return token
+  }
+
+  private handleErrorException (error: any): never {
+    if (error.code === '23505') throw new BadRequestException('Email already used')
+
+    throw new InternalServerErrorException()
   }
 }
