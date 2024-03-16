@@ -3,11 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm'
 
 import { Repository } from 'typeorm'
 
-import type { CreateParticipantDto, UpdateParticipantDto } from './dto'
+import type { CreateParticipantDto } from './dto'
 import { Participant } from './entities/participant.entity'
 import { DrawsService } from '../draws/draws.service'
-import { type User } from 'src/auth/entities/user.entity'
-import { type PaginationDto } from 'src/common'
+import { type User } from '../auth/entities/user.entity'
+import { type PaginationDto } from '../common'
 
 @Injectable()
 export class ParticipantsService {
@@ -18,9 +18,9 @@ export class ParticipantsService {
   ) {}
 
   async create (createParticipantDto: CreateParticipantDto, user: User) {
-    try {
-      const draw = await this.drawService.findOne(createParticipantDto.drawId)
+    const draw = await this.drawService.findOne(createParticipantDto.drawId)
 
+    try {
       const participant = this.participantRepository.create({ draw, user })
 
       await this.participantRepository.save(participant)
@@ -49,7 +49,7 @@ export class ParticipantsService {
       relations: { draw: true, user: true }
     })
 
-    if (!participant) throw new BadRequestException(`User with id ${id} not found`)
+    if (!participant) throw new BadRequestException(`Participant with id ${id} not found`)
 
     return participant
   }

@@ -5,6 +5,7 @@ import { ParticipantsService } from './participants.service'
 import { CreateParticipantDto } from './dto/create-participant.dto'
 import { Auth, GetUser } from '../auth/decorators'
 import { User } from '../auth/entities/user.entity'
+import { ValidRoles } from 'src/auth/interfaces'
 
 @Controller('participants')
 export class ParticipantsController {
@@ -38,7 +39,8 @@ export class ParticipantsController {
   // }
 
   @Delete(':id')
+  @Auth(ValidRoles.admin)
   async remove (@Param('id', ParseUUIDPipe) id: string) {
-    return this.participantsService.remove(id)
+    await this.participantsService.remove(id)
   }
 }
