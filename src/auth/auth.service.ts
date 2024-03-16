@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { JwtService } from '@nestjs/jwt'
 
 import { Repository } from 'typeorm'
 
 import { User } from './entities/user.entity'
 import { type CreateUserDto } from './dtos'
-import { JwtService } from '@nestjs/jwt'
 import { type JwtPayload } from './interfaces'
 
 @Injectable()
@@ -17,10 +17,21 @@ export class AuthService {
   ) {}
 
   async login (user: User) {
-    await this.findOne(user.email)
-    // await this.userRepository.update(userFound.id, user)
+    const userFound = await this.findOne(user.email)
+      .catch(error => {})
+
+    if (!userFound) {
+      const newUser = await this.create(user)
+      await this.userRepository.save(newUser)
+
+      return {
+        ...newUser,
+        token: this.getJwt({ id: user.id })
+      }
+    }
+
     return {
-      ...user,
+      ...userFound,
       token: this.getJwt({ id: user.id })
     }
   }
@@ -29,8 +40,6 @@ export class AuthService {
     try {
       const user = this.userRepository.create(createUserDto)
 
-      console.log(user)
-
       await this.userRepository.save(user)
 
       return {
@@ -38,7 +47,6 @@ export class AuthService {
         token: this.getJwt({ id: user.id })
       }
     } catch (error) {
-      console.log(error)
       this.handleErrorException(error)
     }
   }
