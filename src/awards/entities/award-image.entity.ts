@@ -11,8 +11,8 @@ export class AwardImage {
 
   @ManyToOne(
     () => Award,
-    (award) => award.images
-    // { onDelete: 'CASCADE' } activate to use delete endpoint
+    (award) => award.images,
+    { onDelete: 'CASCADE' }
   )
   readonly award: Award
 }

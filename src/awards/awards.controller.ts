@@ -12,13 +12,13 @@ export class AwardsController {
   constructor (private readonly awardsService: AwardsService) {}
 
   @Get()
-  @Auth(ValidRoles.admin)
+  // @Auth(ValidRoles.admin)
   async findAll (@Query() paginationDto: PaginationDto) {
     return await this.awardsService.findAll(paginationDto)
   }
 
   @Get(':id')
-  @Auth(ValidRoles.admin)
+  // @Auth(ValidRoles.admin)
   async findOne (@Param('id', ParseUUIDPipe) id: string) {
     return await this.awardsService.findOne(id)
   }
