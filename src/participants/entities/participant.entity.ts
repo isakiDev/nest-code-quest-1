@@ -8,18 +8,20 @@ export class Participant {
   @PrimaryGeneratedColumn('uuid')
   readonly id: string
 
-  @Column('timestamp')
-  readonly participantDate: Date
+  @Column('timestamp', {
+    default: () => 'CURRENT_TIMESTAMP'
+  })
+  readonly participantDate?: Date
 
   @ManyToOne(
     () => User,
     (user) => user.id
   )
-  readonly user: string
+  readonly user: User
 
   @ManyToOne(
     () => Draw,
     (draw) => draw.id
   )
-  readonly draw: string
+  readonly draw: Draw
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 
 import { Repository } from 'typeorm'
@@ -16,8 +16,10 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) {}
 
+  // TODO: think separate logic
   async loginDiscord (user: User) {
     const userFound = await this.findOne(user.id)
+      .catch(error => { })
 
     if (!userFound) {
       const newUser = await this.create(user)
@@ -45,6 +47,7 @@ export class AuthService {
 
   async findOne (id: string) {
     const user = await this.userRepository.findOneBy({ id })
+    if (!user) throw new NotFoundException(`User with id ${id} not found`)
     return user
   }
 

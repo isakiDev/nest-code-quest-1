@@ -1,26 +1,72 @@
-import { Injectable } from '@nestjs/common';
-import { CreateParticipantDto } from './dto/create-participant.dto';
-import { UpdateParticipantDto } from './dto/update-participant.dto';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+
+import { Repository } from 'typeorm'
+
+import type { CreateParticipantDto, UpdateParticipantDto } from './dto'
+import { Participant } from './entities/participant.entity'
+import { DrawsService } from '../draws/draws.service'
+import { type User } from 'src/auth/entities/user.entity'
+import { type PaginationDto } from 'src/common'
 
 @Injectable()
 export class ParticipantsService {
-  create(createParticipantDto: CreateParticipantDto) {
-    return 'This action adds a new participant';
+  constructor (
+    @InjectRepository(Participant)
+    private readonly participantRepository: Repository<Participant>,
+    private readonly drawService: DrawsService
+  ) {}
+
+  async create (createParticipantDto: CreateParticipantDto, user: User) {
+    try {
+      const draw = await this.drawService.findOne(createParticipantDto.drawId)
+
+      const participant = this.participantRepository.create({ draw, user })
+
+      await this.participantRepository.save(participant)
+
+      return participant
+    } catch (error) {
+      this.handleErrorException(error)
+    }
   }
 
-  findAll() {
-    return `This action returns all participants`;
+  async findAll (paginationDto: PaginationDto) {
+    const { limit = 10, offset = 0 } = paginationDto
+
+    const participants = await this.participantRepository.find({
+      take: limit,
+      skip: offset,
+      relations: { draw: true, user: true }
+    })
+
+    return participants
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} participant`;
+  async findOne (id: string) {
+    const participant = await this.participantRepository.findOne({
+      where: { id },
+      relations: { draw: true, user: true }
+    })
+
+    if (!participant) throw new BadRequestException(`User with id ${id} not found`)
+
+    return participant
   }
 
-  update(id: number, updateParticipantDto: UpdateParticipantDto) {
-    return `This action updates a #${id} participant`;
+  // update (id: number, updateParticipantDto: UpdateParticipantDto) {
+  //   return `This action updates a #${id} participant`
+  // }
+
+  async remove (id: string) {
+    const participant = await this.findOne(id)
+    await this.participantRepository.remove(participant)
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} participant`;
+  private handleErrorException (error: any) {
+    if (error.code === '22P02') throw new BadRequestException('UserId is invalid')
+    if (error.code === '23505') throw new BadRequestException('User is already participating')
+
+    throw new InternalServerErrorException()
   }
 }

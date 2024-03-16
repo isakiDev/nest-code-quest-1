@@ -11,15 +11,6 @@ import { User } from 'src/auth/entities/user.entity'
 export class AwardsController {
   constructor (private readonly awardsService: AwardsService) {}
 
-  @Post()
-  @Auth(ValidRoles.admin)
-  async create (
-  @GetUser() user: User,
-    @Body() createAwardDto: CreateAwardDto
-  ) {
-    return await this.awardsService.create(createAwardDto, user)
-  }
-
   @Get()
   @Auth(ValidRoles.admin)
   async findAll (@Query() paginationDto: PaginationDto) {
@@ -30,6 +21,15 @@ export class AwardsController {
   @Auth(ValidRoles.admin)
   async findOne (@Param('id', ParseUUIDPipe) id: string) {
     return await this.awardsService.findOne(id)
+  }
+
+  @Post()
+  @Auth(ValidRoles.admin)
+  async create (
+  @GetUser() user: User,
+    @Body() createAwardDto: CreateAwardDto
+  ) {
+    return await this.awardsService.create(createAwardDto, user)
   }
 
   @Patch(':id')

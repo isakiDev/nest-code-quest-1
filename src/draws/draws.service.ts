@@ -49,7 +49,6 @@ export class DrawsService {
 
     if (winningUserId) {
       const user = await this.authService.findOne(winningUserId)
-      if (!user) throw new NotFoundException(`User with id ${id} not found`)
       draw.winningUser = user
     }
 

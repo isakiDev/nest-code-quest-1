@@ -11,6 +11,16 @@ import { ValidRoles } from '../auth/interfaces'
 export class DrawsController {
   constructor (private readonly drawsService: DrawsService) {}
 
+  @Get()
+  async findAll (@Body() paginationDro: PaginationDto) {
+    return await this.drawsService.findAll(paginationDro)
+  }
+
+  @Get(':id')
+  async findOne (@Param('id', ParseUUIDPipe) id: string) {
+    return await this.drawsService.findOne(id)
+  }
+
   @Post()
   @Auth(ValidRoles.admin)
   async create (
@@ -20,11 +30,6 @@ export class DrawsController {
     return await this.drawsService.create(createDrawDto, user)
   }
 
-  @Get()
-  async findAll (@Body() paginationDro: PaginationDto) {
-    return await this.drawsService.findAll(paginationDro)
-  }
-
   @Patch(':id')
   @Auth(ValidRoles.admin)
   async update (
@@ -32,11 +37,6 @@ export class DrawsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateDrawDto: UpdateDrawDto) {
     return await this.drawsService.update(id, updateDrawDto, user)
-  }
-
-  @Get(':id')
-  async findOne (@Param('id', ParseUUIDPipe) id: string) {
-    return await this.drawsService.findOne(id)
   }
 
   @Post('create-draw-award')

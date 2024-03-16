@@ -1,34 +1,44 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common'
+import { Controller, Get, Post, Body, Param, Delete, ParseUUIDPipe } from '@nestjs/common'
+
+import { PaginationDto } from '../common'
 import { ParticipantsService } from './participants.service'
 import { CreateParticipantDto } from './dto/create-participant.dto'
-import { UpdateParticipantDto } from './dto/update-participant.dto'
+import { Auth, GetUser } from '../auth/decorators'
+import { User } from '../auth/entities/user.entity'
 
 @Controller('participants')
 export class ParticipantsController {
-  constructor (private readonly participantsService: ParticipantsService) {}
+  constructor (
+    private readonly participantsService: ParticipantsService
+  ) {}
 
-  @Post()
-  create (@Body() createParticipantDto: CreateParticipantDto) {
-    return this.participantsService.create(createParticipantDto)
-  }
-
+  // TODO: think add Auth()
   @Get()
-  findAll () {
-    return this.participantsService.findAll()
+  async findAll (@Body() paginationDto: PaginationDto) {
+    return await this.participantsService.findAll(paginationDto)
   }
 
   @Get(':id')
-  findOne (@Param('id') id: string) {
-    return this.participantsService.findOne(+id)
+  async findOne (@Param('id', ParseUUIDPipe) id: string) {
+    return await this.participantsService.findOne(id)
   }
 
-  @Patch(':id')
-  update (@Param('id') id: string, @Body() updateParticipantDto: UpdateParticipantDto) {
-    return this.participantsService.update(+id, updateParticipantDto)
+  @Post()
+  @Auth()
+  async create (
+  @GetUser() user: User,
+    @Body() createParticipantDto: CreateParticipantDto
+  ) {
+    return await this.participantsService.create(createParticipantDto, user)
   }
+
+  // @Patch(':id')
+  // update (@Param('id') id: string, @Body() updateParticipantDto: UpdateParticipantDto) {
+  //   return this.participantsService.update(+id, updateParticipantDto)
+  // }
 
   @Delete(':id')
-  remove (@Param('id') id: string) {
-    return this.participantsService.remove(+id)
+  async remove (@Param('id', ParseUUIDPipe) id: string) {
+    return this.participantsService.remove(id)
   }
 }

@@ -5,7 +5,7 @@ import { Draw, DrawAward } from './entities'
 import { DrawsService } from './draws.service'
 import { DrawsController } from './draws.controller'
 import { AuthModule } from '../auth/auth.module'
-import { AwardsModule } from 'src/awards/awards.module'
+import { AwardsModule } from '../awards/awards.module'
 
 @Module({
   controllers: [DrawsController],
@@ -14,6 +14,7 @@ import { AwardsModule } from 'src/awards/awards.module'
     TypeOrmModule.forFeature([Draw, DrawAward]),
     AuthModule,
     AwardsModule
-  ]
+  ],
+  exports: [DrawsService]
 })
 export class DrawsModule {}
