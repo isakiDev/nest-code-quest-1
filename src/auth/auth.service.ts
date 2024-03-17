@@ -62,6 +62,13 @@ export class AuthService {
     return token
   }
 
+  checkAuthStatus (user: User) {
+    return {
+      ...user,
+      token: this.getJwt({ id: user.id })
+    }
+  }
+
   private handleErrorException (error: any): never {
     if (error.code === '23505') throw new BadRequestException('Email already used')
 

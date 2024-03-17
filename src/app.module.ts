@@ -7,7 +7,8 @@ import { EnvConfiguration, JoiValidationSchema } from './config'
 import { AuthModule } from './auth/auth.module'
 import { DrawsModule } from './draws/draws.module'
 import { AwardsModule } from './awards/awards.module'
-import { ParticipantsModule } from './participants/participants.module';
+import { ParticipantsModule } from './participants/participants.module'
+import { PassportModule } from '@nestjs/passport'
 
 @Module({
   imports: [
@@ -26,6 +27,9 @@ import { ParticipantsModule } from './participants/participants.module';
       autoLoadEntities: true,
       synchronize: true
     }),
+
+    // enable session with passport
+    PassportModule.register({ session: true }),
 
     AuthModule,
     DrawsModule,
