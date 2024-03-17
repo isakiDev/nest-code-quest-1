@@ -14,5 +14,4 @@ export const EnvConfiguration = () => ({
   DC_SCOPE: process.env.DC_SCOPE,
 
   JWT_SECRET: process.env.JWT_SECRET
-
 })

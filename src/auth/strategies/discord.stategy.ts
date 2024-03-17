@@ -1,8 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
 
-import { Strategy, type Profile } from 'passport-discord'
+import { Strategy } from 'passport-discord'
 
 @Injectable()
 export class DiscordStrategy extends PassportStrategy(Strategy) {
@@ -17,14 +17,14 @@ export class DiscordStrategy extends PassportStrategy(Strategy) {
     })
   }
 
-  // done: VerifyCallback
-  async validate (accessToken: string, refreshToken: string, profile: Profile): Promise<any> {
-    const joinedToServer = profile.guilds?.some(guild => guild.id === process.env.DC_SERVER_ID)
+  // // done: VerifyCallback
+  // async validate (accessToken: string, refreshToken: string, profile: Profile): Promise<any> {
+  //   const joinedToServer = profile.guilds?.some(guild => guild.id === process.env.DC_SERVER_ID)
 
-    if (!joinedToServer) throw new UnauthorizedException('User not joined to server')
+  //   if (!joinedToServer) throw new UnauthorizedException('User not joined to server')
 
-    const { id, username, avatar, email } = profile
+  //   const { id, username, avatar, email } = profile
 
-    return { oAuthId: id, username, avatar, email }
-  }
+  //   return { oAuthId: id, username, avatar, email }
+  // }
 }

@@ -8,11 +8,10 @@ import { User } from './entities/user.entity'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
 import { DiscordStrategy, JwtStrategy } from './strategies'
-import { SessionSerializer } from './utils/Serializer'
 
 @Module({
   controllers: [AuthController],
-  providers: [SessionSerializer, AuthService, JwtStrategy, DiscordStrategy],
+  providers: [AuthService, JwtStrategy, DiscordStrategy],
   imports: [
     ConfigModule,
 

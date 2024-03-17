@@ -1,33 +1,31 @@
-import { Controller, Get, NotFoundException, Redirect, Req, UseGuards } from '@nestjs/common'
+import { Controller, Get, Query, UseGuards } from '@nestjs/common'
 
 import { AuthService } from './auth.service'
 import { User } from './entities/user.entity'
 import { Auth, GetUser } from './decorators'
-import { DiscordAuthGuard } from './guards/discord-auth.guard'
+import { AuthGuard } from '@nestjs/passport'
 
 @Controller('auth')
 export class AuthController {
   constructor (private readonly authService: AuthService) {}
 
   @Get('discord')
-  @Redirect('http://localhost:5173', 301)
-  @UseGuards(DiscordAuthGuard)
-  async loginDiscord (
-  @GetUser() user: User
+  @UseGuards(AuthGuard('discord'))
+  async showLoginDiscord (
+  ) {}
+
+  @Get('discord/callback')
+  async getAccessToken (
+  @Query('code') code: string
   ) {
-    return await this.authService.login(user)
-      .catch(() => { return { url: 'http://localhost:5173/error', statusCode: 302 } })
+    return await this.authService.getAccessToken(code)
   }
 
-  @Get('status')
-  getStatus (
-  @Req() req: Express.Request
+  @Get('discord/me')
+  async loginWithDiscord (
+  @Query('accessToken') accessToken: string
   ) {
-    if (!req.user) throw new NotFoundException('User not authenticated')
-
-    return {
-      user: req.user
-    }
+    return await this.authService.loginDiscord(accessToken)
   }
 
   @Get('check-auth-status')
