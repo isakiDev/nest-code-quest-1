@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
+import { Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
@@ -48,7 +48,7 @@ export class DrawsService {
     })
 
     if (winningUserId) {
-      const user = await this.authService.findOne(winningUserId)
+      const user = await this.authService.findOneById(winningUserId)
       draw.winningUser = user
     }
 
@@ -90,8 +90,17 @@ export class DrawsService {
     return await this.drawAwardRepository.save(drawAward)
   }
 
-  // TODO: add remove
-  // remove (id: number) {
-  //   return `This action removes a #${id} draw`
-  // }
+  async remove (id: string) {
+    try {
+      const draw = await this.findOne(id)
+      await this.drawRepository.remove(draw)
+    } catch (error) {
+      this.handleErrorException(error)
+    }
+  }
+
+  private handleErrorException (error: any): never {
+    if (error.code === '23503') throw new UnauthorizedException('The giveaway has participants.')
+    throw new InternalServerErrorException()
+  }
 }

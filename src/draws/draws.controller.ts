@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, ParseUUIDPipe } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, ParseUUIDPipe, Delete } from '@nestjs/common'
 
 import { PaginationDto } from '../common'
 import { DrawsService } from './draws.service'
@@ -47,8 +47,9 @@ export class DrawsController {
 
   // TODO: think add updateDrawAward
 
-  // @Delete(':id')
-  // remove (@Param('id') id: string) {
-  //   return this.drawsService.remove(+id)
-  // }
+  @Delete(':id')
+  @Auth(ValidRoles.admin)
+  async remove (@Param('id', ParseUUIDPipe) id: string) {
+    await this.drawsService.remove(id)
+  }
 }

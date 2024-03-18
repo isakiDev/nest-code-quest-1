@@ -11,5 +11,5 @@ export class CreateUserDto {
   readonly username: string
 
   @IsString()
-  readonly avatar: string
+  readonly avatar?: string
 }

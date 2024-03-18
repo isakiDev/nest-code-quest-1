@@ -1,4 +1,4 @@
-import { IsBoolean } from 'class-validator'
+import { IsBoolean, IsOptional } from 'class-validator'
 import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm'
 
 @Entity('users')
@@ -16,8 +16,8 @@ export class User {
   @Column('text')
   readonly email: string
 
-  @Column('text')
-  readonly avatar: string
+  @Column('text', { nullable: true })
+  readonly avatar?: string
 
   @Column('text', {
     array: true,

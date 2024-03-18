@@ -54,6 +54,18 @@ export class ParticipantsService {
     return participant
   }
 
+  async findAllParticipants (drawId: string) {
+    const draw = await this.drawService.findOne(drawId)
+
+    const participants = await this.participantRepository.find({
+      relations: { user: true },
+      select: { user: { id: true, username: true } },
+      where: { draw: { id: draw.id } }
+    })
+
+    return participants
+  }
+
   // update (id: number, updateParticipantDto: UpdateParticipantDto) {
   //   return `This action updates a #${id} participant`
   // }

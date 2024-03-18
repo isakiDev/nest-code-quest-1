@@ -13,15 +13,20 @@ export class ParticipantsController {
     private readonly participantsService: ParticipantsService
   ) {}
 
-  // TODO: think add Auth()
   @Get()
   async findAll (@Body() paginationDto: PaginationDto) {
     return await this.participantsService.findAll(paginationDto)
   }
 
-  @Get(':id')
-  async findOne (@Param('id', ParseUUIDPipe) id: string) {
-    return await this.participantsService.findOne(id)
+  // @Get(':id')
+  // async findOne (@Param('id', ParseUUIDPipe) id: string) {
+  //   return await this.participantsService.findOne(id)
+  // }
+
+  @Get('/:id')
+  async findAllParticipants (
+  @Param('id', ParseUUIDPipe) drawId: string) {
+    return await this.participantsService.findAllParticipants(drawId)
   }
 
   @Post()

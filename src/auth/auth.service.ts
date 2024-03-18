@@ -27,23 +27,34 @@ export class AuthService {
   ) {}
 
   async login (user: User) {
-    const userFound = await this.findOne(user.email)
-      .catch(error => {})
+    try {
+      const userFound = await this.findOne(user.email)
+        .catch(error => {})
 
-    if (!userFound) {
-      const newUser = await this.create(user)
+      if (!userFound) {
+        const { id, ...userData } = user
 
-      await this.userRepository.save(newUser)
+        const newUser = await this.create({
+          ...userData,
+          oAuthId: id
+        })
+
+        await this.userRepository.save(newUser)
+
+        return {
+          ...newUser,
+          token: this.getJwt({ id: newUser.id })
+        }
+      }
+
+      if (!userFound.isActive) throw new UnauthorizedException('User is inactive')
 
       return {
-        ...newUser,
-        token: this.getJwt({ id: newUser.id })
+        ...userFound,
+        token: this.getJwt({ id: userFound.id })
       }
-    }
-
-    return {
-      ...userFound,
-      token: this.getJwt({ id: userFound.id })
+    } catch (error) {
+      this.handleErrorException(error)
     }
   }
 
@@ -68,6 +79,12 @@ export class AuthService {
     return user
   }
 
+  async findOneById (id: string) {
+    const user = await this.userRepository.findOneBy({ id })
+    if (!user) throw new NotFoundException(`User with email ${id} not found`)
+    return user
+  }
+
   getJwt (payload: JwtPayload) {
     const token = this.jwtService.sign(payload)
     return token
@@ -84,6 +101,7 @@ export class AuthService {
 
   async loginDiscord (accessToken: string) {
     const user = await this.getProfile(accessToken)
+
     const guilds = await this.getGuilds(accessToken)
 
     const joinedToServer = guilds.map(guild => guild.id === process.env.DC_SERVER_ID)
@@ -102,6 +120,7 @@ export class AuthService {
     if (!response.ok) throw new InternalServerErrorException('Error getting profile')
 
     const userData = await response.json() as User
+
     return userData
   }
 
@@ -147,6 +166,7 @@ export class AuthService {
   }
 
   private handleErrorException (error: any): never {
+    console.log(error)
     if (error.code === '23505') throw new BadRequestException('Email already used')
 
     throw new InternalServerErrorException()
