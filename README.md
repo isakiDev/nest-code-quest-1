@@ -9,3 +9,4 @@
 - copy .env.example and rename to .env
 - fill environment in .env
 - docker-compose up -d
+- pnpm start:dev
